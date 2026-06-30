@@ -6,13 +6,11 @@
   <title>Gold Street — Wall Street Recruiting</title>
   <meta name="description" content="The leading Wall Street recruiting firm. Bespoke preparation. Elite placements." />
 
-  <!-- Prevent flash of unstyled content -->
   <style>
     html, body { background: #0a0a0a; margin: 0; }
     #loader { position: fixed; inset: 0; z-index: 1000; background: #0a0a0a; }
   </style>
 
-  <!-- Google Fonts — preconnect first -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -20,22 +18,16 @@
     rel="stylesheet"
   />
 
-  <!-- GSAP + ScrollTrigger -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script>gsap.registerPlugin(ScrollTrigger);</script>
 
-  <!-- Lenis smooth scroll -->
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
-  <!-- Main stylesheet -->
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════
-     LOADING SCREEN
-     ══════════════════════════════════════════════════ -->
 <div id="loader" aria-hidden="true">
   <span class="loader__mark">Gold Street &nbsp;&middot;&nbsp; Recruiting</span>
   <div class="loader__bar-wrap">
@@ -43,9 +35,6 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     VIDEO LAYER — Fixed, drives all scenes
-     ══════════════════════════════════════════════════ -->
 <div id="video-bg" aria-hidden="true">
   <video
     id="scene-video"
@@ -61,12 +50,8 @@
   </video>
 </div>
 
-<!-- Global scrim -->
 <div id="video-scrim" aria-hidden="true"></div>
 
-<!-- ══════════════════════════════════════════════════
-     NAVIGATION
-     ══════════════════════════════════════════════════ -->
 <header id="nav" role="banner">
   <a href="#" class="nav__logo" aria-label="Gold Street">
     Gold<span>Street</span>
@@ -76,14 +61,8 @@
   </a>
 </header>
 
-<!-- ══════════════════════════════════════════════════
-     SCROLL PROGRESS
-     ══════════════════════════════════════════════════ -->
 <div id="scroll-progress" aria-hidden="true"></div>
 
-<!-- ══════════════════════════════════════════════════
-     SCENE DOTS
-     ══════════════════════════════════════════════════ -->
 <nav id="scene-dots" aria-label="Scene indicator" aria-hidden="true">
   <span class="dot active" data-scene="1"></span>
   <span class="dot" data-scene="2"></span>
@@ -93,15 +72,9 @@
   <span class="dot" data-scene="6"></span>
 </nav>
 
-<!-- ══════════════════════════════════════════════════
-     MAIN CONTENT
-     ══════════════════════════════════════════════════ -->
 <main>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 1 — Wall Street Approach (400vh)
-       Video: 0–16%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 1 — Wall Street Approach (400vh) / Video: 0–16% -->
   <section class="scene scene--1" aria-label="Wall Street approach">
     <div class="scene__frame">
       <div class="scene__content">
@@ -110,13 +83,18 @@
           The process<br /><em>selects</em><br />before you arrive.
         </h1>
       </div>
+      <!-- Scroll hint -->
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="scroll-hint__label">Scroll to begin</span>
+        <div class="scroll-hint__chevrons">
+          <svg class="chev chev--1" viewBox="0 0 20 12" fill="none"><path d="M1 1l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg class="chev chev--2" viewBox="0 0 20 12" fill="none"><path d="M1 1l9 9 9-9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 2 — The Lobby (400vh)
-       Video: 16–33%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 2 — The Lobby (400vh) / Video: 16–33% -->
   <section class="scene scene--2" aria-label="The lobby">
     <div class="scene__frame">
       <div class="scene__content">
@@ -131,10 +109,7 @@
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 3 — Entering (300vh)
-       Video: 33–47%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 3 — Entering (300vh) / Video: 33–47% -->
   <section class="scene scene--3" aria-label="Personalized strategy">
     <div class="scene__frame">
       <div class="scene__content">
@@ -146,24 +121,22 @@
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 4 — Pure cinema (400vh)
-       Video: 47–64%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 4 — Pure cinema (400vh) / Video: 47–64% -->
   <section class="scene scene--4" aria-label="Wall Street">
-    <div class="scene__frame">
-      <!-- Intentionally empty — pure visual moment -->
-    </div>
+    <div class="scene__frame"></div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 5 — The result (300vh)
-       Video: 64–79%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 5 — The result (300vh) / Video: 64–79% -->
   <section class="scene scene--5" aria-label="Placement results">
     <div class="scene__frame">
       <div class="scene__content">
-        <span class="scene__eyebrow s5-eyebrow">Goldman Sachs &nbsp;&middot;&nbsp; Evercore &nbsp;&middot;&nbsp; Megafund PE</span>
+        <span class="scene__eyebrow s5-eyebrow">
+          <span class="eyebrow-pill">Goldman Sachs</span>
+          <span class="eyebrow-pill__dot">&middot;</span>
+          <span class="eyebrow-pill">Evercore</span>
+          <span class="eyebrow-pill__dot">&middot;</span>
+          <span class="eyebrow-pill">Megafund PE</span>
+        </span>
         <h2 class="scene__title s5-title">
           25 candidates.<br />Every one<br /><em>placed.</em>
         </h2>
@@ -171,10 +144,7 @@
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 6 — Handshake (300vh)
-       Video: 79–94%
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 6 — Handshake (300vh) / Video: 79–94% -->
   <section class="scene scene--6 scene--dark-bottom" aria-label="The offer">
     <div class="scene__frame">
       <div class="scene__content">
@@ -183,27 +153,21 @@
     </div>
   </section>
 
-  <!-- ──────────────────────────────────────────────
-       SCENE 7 — CTA (static)
-       Two PDF downloads
-       ────────────────────────────────────────────── -->
+  <!-- SCENE 7 — CTA (static) -->
   <section class="scene scene--7" id="cta" aria-label="Gold Street Resources">
     <div class="cta__inner">
 
-      <!-- Guide card mockup -->
+      <!-- Guide card -->
       <div class="guide-card" role="img" aria-label="Gold Street Recruiting Guide cover">
         <span class="guide-card__mark">Gold Street &nbsp;&middot;&nbsp; Confidential</span>
-
         <h2 class="guide-card__title">Wall Street<br />Recruiting<br />Guide</h2>
-
         <div class="guide-card__divider"></div>
         <span class="guide-card__sub">Investment Banking &nbsp;&middot;&nbsp; 2026 Edition</span>
-
         <ul class="guide-card__chapters" aria-label="Guide contents">
           <li>Networking Roadmap</li>
           <li>Technical Interview Preparation</li>
           <li>Positioning Your Candidacy</li>
-          <li>Behavioral & Fit Mastery</li>
+          <li>Behavioral &amp; Fit Mastery</li>
           <li>Feeder Club Strategy</li>
         </ul>
       </div>
@@ -234,13 +198,55 @@
       </div>
 
     </div>
+
+    <!-- Founder card -->
+    <div class="founder-strip">
+      <div class="founder-card">
+        <img
+          src="assets/images/brian-landeros.jpg"
+          alt="Brian Landeros, Founder of Gold Street"
+          class="founder-card__photo"
+          width="60"
+          height="60"
+        />
+        <div class="founder-card__info">
+          <span class="founder-card__name">Brian Landeros</span>
+          <span class="founder-card__role">Founder &nbsp;&middot;&nbsp; est. 2022</span>
+        </div>
+      </div>
+      <p class="founder-strip__tagline">
+        By invitation only.<br />
+        <em>If you're a top candidate, we'll find you.</em>
+      </p>
+    </div>
+
+    <!-- Press -->
+    <div class="press-strip">
+      <span class="press-strip__label">As seen in</span>
+      <div class="press-strip__links">
+        <a
+          href="https://finance.yahoo.com/news/gold-street-cracks-code-wall-150000883.html"
+          class="press-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Yahoo Finance: Gold Street cracks the code on Wall Street recruiting"
+        >
+          <svg class="press-link__yahoo-logo" viewBox="0 0 80 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+            <text x="0" y="19" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="currentColor">Yahoo</text>
+            <text x="52" y="19" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="currentColor" opacity="0.6">Finance</text>
+          </svg>
+          <span class="press-link__headline">"Gold Street Cracks the Code on Wall Street Recruiting"</span>
+          <svg class="press-link__arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
   </section>
 
 </main>
 
-<!-- ══════════════════════════════════════════════════
-     SCRIPTS
-     ══════════════════════════════════════════════════ -->
 <script src="js/main.js"></script>
 
 </body>
