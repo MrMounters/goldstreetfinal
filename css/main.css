@@ -653,10 +653,14 @@ a { color: inherit; text-decoration: none; }
 .founder-portrait {
   width: 100%;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .founder-portrait__photo {
-  width: 100%;
+  width: 40%;
+  max-width: 192px;
   aspect-ratio: 3 / 2;
   object-fit: cover;
   object-position: center top;
@@ -669,7 +673,9 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   gap: 0.35rem;
   padding-top: 1rem;
-  text-align: left;
+  text-align: center;
+  width: 40%;
+  max-width: 192px;
 }
 
 .founder-portrait__name {
