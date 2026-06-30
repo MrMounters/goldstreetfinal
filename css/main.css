@@ -211,7 +211,12 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 640px) {
   #nav { padding: 1.2rem 1.4rem; }
-  .nav__cta { display: none; }
+  .nav__logo-text { display: none; }
+  .nav__cta {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    padding: 0.55em 1.05em;
+  }
 }
 
 
@@ -345,8 +350,9 @@ a { color: inherit; text-decoration: none; }
 
 
 /* ══════════════════════════════════════════════════════
-   EYEBROW PILLS — Scene 5
+   EYEBROW PILLS — Scenes 4 & 5
    ══════════════════════════════════════════════════════ */
+.scene__eyebrow.scene__eyebrow--pills,
 .scene__eyebrow.s5-eyebrow {
   display: flex;
   align-items: center;
@@ -356,6 +362,10 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0;
   text-transform: none;
   margin-bottom: 2rem;
+}
+
+.scene--4 .scene__eyebrow--pills {
+  margin-bottom: 0;
 }
 
 .eyebrow-pill {
@@ -632,6 +642,14 @@ a { color: inherit; text-decoration: none; }
   gap: 1.1rem;
 }
 
+.press-strip__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .press-strip__label {
   font-family: var(--font-ui);
   font-size: 0.56rem;
@@ -639,6 +657,35 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.38em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.22);
+}
+
+.press-social-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.45em 0.85em;
+  border-radius: 999px;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+
+.press-social-link:hover {
+  color: rgba(255,255,255,0.82);
+  border-color: rgba(201,168,76,0.28);
+  background: rgba(201,168,76,0.04);
+}
+
+.press-social-link__icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  opacity: 0.75;
 }
 
 .press-strip__links {
@@ -771,6 +818,13 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 480px) {
   .scene__title { letter-spacing: 0; }
   .cta__buttons { flex-direction: column; align-items: center; }
+  .scene__eyebrow.scene__eyebrow--pills,
+  .scene__eyebrow.s5-eyebrow { gap: 0.35rem; }
+  .eyebrow-pill {
+    font-size: 0.52rem;
+    letter-spacing: 0.12em;
+    padding: 0.32em 0.65em;
+  }
 }
 
 .sr-only {

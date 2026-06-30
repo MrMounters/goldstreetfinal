@@ -25,7 +25,9 @@ const SCENE_CONFIG = [
   },
   {
     id: 4, vh: 400, vs: 0.47, ve: 0.64,
-    overlays: []
+    overlays: [
+      { sel: '.s4-eyebrow', type: 'fade-up', at: [0.18, 0.32], out: [0.72, 0.88] },
+    ]
   },
   {
     id: 5, vh: 300, vs: 0.64, ve: 0.79,
