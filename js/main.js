@@ -318,36 +318,29 @@ function initScrollHint() {
 function initAmbient() {
   const toggle = document.getElementById('ambient-toggle');
   const audio  = document.getElementById('ambient-audio');
+  const label  = toggle?.querySelector('.ambient-toggle__label');
   if (!toggle || !audio) return;
 
-  let revealed = false;
-
-  function revealToggle() {
-    if (revealed) return;
-    revealed = true;
-    toggle.hidden = false;
-  }
-
-  ScrollTrigger.create({
-    trigger: '.scene--1',
-    start: 'top top',
-    end: '+=40',
-    onUpdate(self) {
-      if (self.progress > 0.04) revealToggle();
-    },
-  });
+  toggle.hidden = false;
+  toggle.classList.add('ambient-toggle--pulse');
 
   toggle.addEventListener('click', async () => {
     try {
       if (audio.paused) {
-        audio.volume = 0.18;
+        audio.volume = 0.35;
         await audio.play();
         toggle.classList.add('is-on');
+        toggle.classList.remove('ambient-toggle--pulse');
         toggle.setAttribute('aria-pressed', 'true');
+        toggle.setAttribute('aria-label', 'Mute ambient sound');
+        if (label) label.textContent = 'On';
       } else {
         audio.pause();
         toggle.classList.remove('is-on');
+        toggle.classList.add('ambient-toggle--pulse');
         toggle.setAttribute('aria-pressed', 'false');
+        toggle.setAttribute('aria-label', 'Unmute ambient sound');
+        if (label) label.textContent = 'Unmute';
       }
     } catch (_) {}
   });

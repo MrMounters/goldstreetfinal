@@ -110,17 +110,20 @@
   <a href="#cta" class="nav__cta" aria-label="View the briefing">The Briefing</a>
 </header>
 
-<button id="ambient-toggle" class="ambient-toggle" type="button" aria-label="Toggle ambient sound" aria-pressed="false" hidden>
-  <svg class="ambient-toggle__icon ambient-toggle__icon--off" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-    <path d="M15.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-  <svg class="ambient-toggle__icon ambient-toggle__icon--on" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-    <path d="M15.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M18.5 6.5a8.5 8.5 0 010 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
+<button id="ambient-toggle" class="ambient-toggle" type="button" aria-label="Unmute ambient sound" aria-pressed="false" hidden>
+  <span class="ambient-toggle__inner">
+    <svg class="ambient-toggle__icon ambient-toggle__icon--off" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M15.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <svg class="ambient-toggle__icon ambient-toggle__icon--on" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M11 5L6 9H3v6h3l5 4V5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M15.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M18.5 6.5a8.5 8.5 0 010 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="ambient-toggle__label">Unmute</span>
 </button>
 <audio id="ambient-audio" loop preload="none" aria-hidden="true">
   <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
@@ -274,13 +277,15 @@
     <!-- Founder -->
     <div class="founder-strip">
       <figure class="founder-portrait">
-        <img
-          src="assets/images/brian-landeros.jpg"
-          alt="Brian Landeros, Founder of Gold Street"
-          class="founder-portrait__photo"
-          width="192"
-          height="128"
-        />
+        <div class="founder-portrait__ring">
+          <img
+            src="assets/images/brian-landeros.jpg"
+            alt="Brian Landeros, Founder of Gold Street"
+            class="founder-portrait__photo"
+            width="96"
+            height="96"
+          />
+        </div>
         <figcaption class="founder-portrait__caption">
           <span class="founder-portrait__name">Brian Landeros</span>
           <span class="founder-portrait__role">Founder &nbsp;&middot;&nbsp; est. 2022</span>
