@@ -31,7 +31,11 @@
 <!-- LOADING SCREEN -->
 <div id="loader" aria-hidden="true">
   <div class="loader__top">
-    <img src="assets/images/gs-logo.jpg" alt="" class="loader__logo-img" aria-hidden="true" />
+    <svg class="loader__logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="36" height="36" rx="5" fill="#1a1710"/>
+      <path d="M28 32 C24 32 20 28 18 24 C16 20 14 17 11 16 C8 15 6 17 5 20" stroke="#c9a84c" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M28 32 C24 32 20 28 18 24 C16 20 14 17 11 16 C8 15 6 17 5 20" stroke="#e2c97e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+    </svg>
     <span class="loader__brand">Gold Street</span>
   </div>
   <span class="loader__tagline">Private Invitation</span>
@@ -62,7 +66,18 @@
 <!-- NAV -->
 <header id="nav" role="banner">
   <a href="#" class="nav__logo" aria-label="Gold Street">
-    <img src="assets/images/gs-logo.jpg" alt="Gold Street" class="nav__logo-img" />
+    <svg class="nav__logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="36" height="36" rx="5" fill="#1a1710"/>
+      <rect width="36" height="36" rx="5" fill="url(#gs-border)" opacity="0.4"/>
+      <path d="M28 32 C24 32 20 28 18 24 C16 20 14 17 11 16 C8 15 6 17 5 20" stroke="#c9a84c" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M28 32 C24 32 20 28 18 24 C16 20 14 17 11 16 C8 15 6 17 5 20" stroke="#e2c97e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.5"/>
+      <defs>
+        <linearGradient id="gs-border" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="#c9a84c" stop-opacity="0.05"/>
+        </linearGradient>
+      </defs>
+    </svg>
     <span class="nav__logo-text">Gold Street</span>
   </a>
   <a href="#cta" class="nav__cta" aria-label="View resources">Resources</a>
