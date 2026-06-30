@@ -422,10 +422,13 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 2rem;
 }
 
+<<<<<<< HEAD
 .scene--2 .scene__eyebrow--pills {
   justify-content: flex-start;
 }
 
+=======
+>>>>>>> origin/claude/unzip-deploy-prep-mmi9pd
 .scene--4 .scene__eyebrow--pills {
   margin-bottom: 0;
 }
@@ -904,6 +907,7 @@ a { color: inherit; text-decoration: none; }
     letter-spacing: 0.12em;
     padding: 0.32em 0.65em;
   }
+<<<<<<< HEAD
   .scroll-hint__pill { padding: 0.75rem 1.1rem 0.85rem; }
   .scroll-hint__label { font-size: 0.56rem; letter-spacing: 0.22em; }
 }
@@ -926,6 +930,8 @@ a { color: inherit; text-decoration: none; }
   .ambient-toggle {
     transition: none !important;
   }
+=======
+>>>>>>> origin/claude/unzip-deploy-prep-mmi9pd
 }
 
 .sr-only {
