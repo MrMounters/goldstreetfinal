@@ -39,9 +39,7 @@ const SCENE_CONFIG = [
   },
   {
     id: 4, vh: 400, vs: 0.47, ve: 0.64,
-    overlays: [
-      { sel: '.s4-eyebrow', type: 'pills-stagger', at: [0.18, 0.36], out: [0.72, 0.88] },
-    ]
+    overlays: []
   },
   {
     id: 5, vh: 300, vs: 0.64, ve: 0.79,
@@ -137,6 +135,7 @@ function initAfterVideo() {
     buildWatermark();
     initScrollHint();
     initAmbient();
+    initPressShine();
   } catch (err) {
     console.warn('Scene scroll-binding failed.', err);
   }
@@ -351,6 +350,23 @@ function buildWatermark() {
       onEnterBack: () => gsap.to(wm, { opacity: 0.038, duration: 1.1, ease: 'power2.out' }),
       onLeaveBack: () => gsap.to(wm, { opacity: 0.012, duration: 0.7, ease: 'power2.out' }),
     });
+  });
+}
+
+/* ─── 8b. PRESS STRIP SHINE ───────────────────────── */
+function initPressShine() {
+  const label = document.querySelector('.press-strip__label');
+  const link  = document.querySelector('.press-social-link');
+  if (!label && !link) return;
+
+  ScrollTrigger.create({
+    trigger: '.press-strip',
+    start: 'top 85%',
+    once: true,
+    onEnter() {
+      if (label) label.classList.add('shine-once');
+      if (link) link.classList.add('shine-once');
+    },
   });
 }
 
