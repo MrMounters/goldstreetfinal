@@ -139,6 +139,9 @@ setTimeout(() => {
   initAfterVideo();
 }, 8000);
 
+// Pause immediately after autoplay begins — scrubbing takes over
+video.addEventListener('play', () => { video.pause(); }, { once: true });
+
 // Start loading
 video.load();
 
