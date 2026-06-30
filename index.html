@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hartwell — Executive Preparation</title>
+  <meta name="description" content="One cinematic journey from the street to the seat that changes everything." />
+
+  <!-- Prevent flash of unstyled content -->
+  <style>
+    html, body { background: #0a0a0a; margin: 0; }
+    #loader { position: fixed; inset: 0; z-index: 1000; background: #0a0a0a; }
+  </style>
+
+  <!-- Google Fonts — preconnect first -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>gsap.registerPlugin(ScrollTrigger);</script>
+
+  <!-- Lenis smooth scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════
+     LOADING SCREEN
+     ══════════════════════════════════════════════════ -->
+<div id="loader" aria-hidden="true">
+  <span class="loader__mark">Hartwell &nbsp;&middot;&nbsp; Executive</span>
+  <div class="loader__bar-wrap">
+    <div class="loader__bar"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     VIDEO LAYER — Fixed, drives all scenes
+     ══════════════════════════════════════════════════ -->
+<div id="video-bg" aria-hidden="true">
+  <video
+    id="scene-video"
+    muted
+    playsinline
+    preload="auto"
+    disablePictureInPicture
+    aria-hidden="true"
+  >
+    <source src="assets/videos/scene.webm" type="video/webm" />
+    <source src="assets/videos/scene.mp4"  type="video/mp4"  />
+  </video>
+</div>
+
+<!-- Global scrim -->
+<div id="video-scrim" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════════════════
+     NAVIGATION
+     ══════════════════════════════════════════════════ -->
+<header id="nav" role="banner">
+  <a href="#" class="nav__logo" aria-label="Hartwell Executive">
+    Hart<span>well</span>
+  </a>
+  <a href="#cta" class="nav__cta" aria-label="Download the guide">
+    The Guide
+  </a>
+</header>
+
+<!-- ══════════════════════════════════════════════════
+     SCROLL PROGRESS
+     ══════════════════════════════════════════════════ -->
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════════════════
+     SCENE DOTS
+     ══════════════════════════════════════════════════ -->
+<nav id="scene-dots" aria-label="Scene indicator" aria-hidden="true">
+  <span class="dot active" data-scene="1"></span>
+  <span class="dot" data-scene="2"></span>
+  <span class="dot" data-scene="3"></span>
+  <span class="dot" data-scene="4"></span>
+  <span class="dot" data-scene="5"></span>
+  <span class="dot" data-scene="6"></span>
+</nav>
+
+<!-- ══════════════════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════════════════ -->
+<main>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 1 — Wall Street Approach (400vh)
+       Video: 0–16%
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--1" aria-label="Wall Street approach">
+    <div class="scene__frame">
+      <div class="scene__content">
+        <span class="scene__eyebrow s1-eyebrow">New York &nbsp;&middot;&nbsp; 6:47 AM</span>
+        <h1 class="scene__title s1-title">
+          The street<br /><em>remembers</em><br />nothing.
+        </h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 2 — Executive Elevator (400vh)
+       Video: 16–33%
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--2" aria-label="Standing before the elevator">
+    <div class="scene__frame">
+      <div class="scene__content">
+        <span class="scene__eyebrow s2-eyebrow">Floor 47 &nbsp;&middot;&nbsp; Hartwell Capital</span>
+        <h2 class="scene__title s2-title">
+          The room<br />is already<br />deciding.
+        </h2>
+        <span class="scene__sub s2-sub">
+          Every second before you enter<br />shapes what happens inside.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 3 — Entering Elevator (300vh)
+       Video: 33–47%
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--3" aria-label="Entering the elevator">
+    <div class="scene__frame">
+      <div class="scene__content">
+        <h2 class="scene__title s3-title">
+          Composed.<br /><em>Prepared.</em>
+        </h2>
+        <span class="scene__line s3-line"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 4 — X-Ray Building (400vh)
+       Video: 47–64%
+       Pure cinema — no overlay text
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--4" aria-label="Aerial view of the building">
+    <div class="scene__frame">
+      <!-- Intentionally empty — pure visual moment -->
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 5 — Interview Room (300vh)
+       Video: 64–79%
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--5" aria-label="The interview room">
+    <div class="scene__frame">
+      <div class="scene__content">
+        <span class="scene__eyebrow s5-eyebrow">The moment that defines the year</span>
+        <h2 class="scene__title s5-title">
+          Walk in<br />already<br /><em>winning.</em>
+        </h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 6 — Handshake (300vh)
+       Video: 79–94%
+       Single word reveal
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--6 scene--dark-bottom" aria-label="The handshake">
+    <div class="scene__frame">
+      <div class="scene__content">
+        <p class="scene__word s6-word">Offer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────────────────────
+       SCENE 7 — CTA (static)
+       Luxury guide + download button
+       ────────────────────────────────────────────── -->
+  <section class="scene scene--7" id="cta" aria-label="Executive Preparation Guide">
+    <div class="cta__inner">
+
+      <!-- Guide card mockup -->
+      <div class="guide-card" role="img" aria-label="Executive Preparation Guide cover">
+        <span class="guide-card__mark">Hartwell &nbsp;&middot;&nbsp; Confidential</span>
+
+        <h2 class="guide-card__title">Executive<br />Preparation<br />Guide</h2>
+
+        <div class="guide-card__divider"></div>
+        <span class="guide-card__sub">Investment Banking &nbsp;&middot;&nbsp; 2026 Edition</span>
+
+        <ul class="guide-card__chapters" aria-label="Guide contents">
+          <li>The Investor Mindset</li>
+          <li>Reading the Room</li>
+          <li>Positioning Your Track Record</li>
+          <li>Handling Pressure Questions</li>
+          <li>The Art of the Close</li>
+        </ul>
+      </div>
+
+      <!-- Copy + CTA -->
+      <div class="cta__copy">
+        <h2 class="cta__headline">
+          Everything you need<br /><em>before the room decides.</em>
+        </h2>
+        <p class="cta__sub">
+          Curated by former managing directors at top-tier firms.
+          Used by candidates who received offers.
+        </p>
+        <a href="#" class="btn-download" download aria-label="Download the Executive Preparation Guide">
+          <span>Download the Guide</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 1v8M3.5 5.5 7 9l3.5-3.5M1 11h12" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════
+     SCRIPTS
+     ══════════════════════════════════════════════════ -->
+<script src="js/main.js"></script>
+
+</body>
+</html>

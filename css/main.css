@@ -1,0 +1,618 @@
+/* ═══════════════════════════════════════════════
+   HARTWELL EXEC — Cinematic Scrollytelling
+   Design: Apple × Active Theory × Investment Banking
+   ═══════════════════════════════════════════════ */
+
+/* ── Custom Properties ── */
+:root {
+  --gold:        #c9a84c;
+  --gold-light:  #e2c97e;
+  --gold-dark:   #9a7a30;
+  --ink:         #0a0a0a;
+  --charcoal:    #111111;
+  --glass:       rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(201, 168, 76, 0.18);
+
+  --font-display: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --font-ui:      'Inter', -apple-system, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-expo:  cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  background: var(--ink);
+  /* Hide scrollbar — Lenis handles visual scroll */
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar { display: none; }
+
+body {
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-ui);
+  overflow-x: hidden;
+  /* GSAP ScrollTrigger requires overflow visible on body */
+}
+
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
+
+/* ══════════════════════════════════════════════════════
+   VIDEO LAYER — Fixed, full-viewport, always behind
+   ══════════════════════════════════════════════════════ */
+#video-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+#video-bg video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Never show loading state */
+  transition: none;
+}
+
+/* Global dark scrim — intensity varies per scene via JS */
+#video-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.32);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   LOADING SCREEN
+   ══════════════════════════════════════════════════════ */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+
+#loader.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader__mark {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.9;
+}
+
+.loader__bar-wrap {
+  width: 120px;
+  height: 1px;
+  background: rgba(201, 168, 76, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.loader__bar {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+/* ══════════════════════════════════════════════════════
+   NAV — Minimal fixed bar
+   ══════════════════════════════════════════════════════ */
+#nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 2rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Fades in after load */
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo);
+}
+
+#nav.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.nav__logo {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+}
+
+.nav__logo span {
+  color: var(--gold);
+}
+
+.nav__cta {
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 0.7em 1.6em;
+  border-radius: 999px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.nav__cta:hover {
+  color: var(--gold-light);
+  border-color: var(--gold-dark);
+}
+
+@media (max-width: 640px) {
+  #nav { padding: 1.4rem 1.5rem; }
+  .nav__cta { display: none; }
+}
+
+
+/* ══════════════════════════════════════════════════════
+   SCENES — The scrollable content stack
+   Each scene is in normal flow; overlays are sticky
+   ══════════════════════════════════════════════════════ */
+.scene {
+  position: relative;
+  z-index: 2; /* above video, below nav */
+}
+
+/* Sticky overlay frame inside each scene */
+.scene__frame {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* video behind can't be clicked anyway */
+}
+
+/* Scene content wrapper — centered */
+.scene__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 2rem;
+  max-width: 72rem;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* ── Scene-specific scrim overrides ── */
+.scene--dark-bottom .scene__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   TYPOGRAPHY — Display scale
+   ══════════════════════════════════════════════════════ */
+.scene__eyebrow {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.8rem;
+  opacity: 0; /* animated by GSAP */
+}
+
+.scene__title {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 8vw, 7.5rem);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  color: #fff;
+  opacity: 0; /* animated by GSAP */
+  text-shadow: 0 2px 60px rgba(0,0,0,0.5);
+}
+
+.scene__title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.scene__sub {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.6);
+  margin-top: 1.8rem;
+  max-width: 42ch;
+  margin-inline: auto;
+  line-height: 1.7;
+  opacity: 0; /* animated by GSAP */
+}
+
+/* Word — single large word reveal */
+.scene__word {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 14vw, 13rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+}
+
+/* Divider line */
+.scene__line {
+  display: block;
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+  margin: 2rem auto;
+  opacity: 0;
+}
+
+/* Bottom-aligned content */
+.scene__content--bottom {
+  position: absolute;
+  bottom: 10dvh;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: left;
+  max-width: none;
+  width: auto;
+  padding: 0 3rem;
+}
+
+
+/* ══════════════════════════════════════════════════════
+   SCENE 1 — Wall Street Approach
+   ══════════════════════════════════════════════════════ */
+.scene--1 { height: 400vh; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 2 — Executive Elevator
+   ══════════════════════════════════════════════════════ */
+.scene--2 { height: 400vh; }
+
+.scene--2 .scene__content { text-align: left; padding: 0 3rem; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 3 — Entering Elevator
+   ══════════════════════════════════════════════════════ */
+.scene--3 { height: 300vh; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 4 — X-Ray Building (pure cinema)
+   ══════════════════════════════════════════════════════ */
+.scene--4 { height: 400vh; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 5 — Interview Room
+   ══════════════════════════════════════════════════════ */
+.scene--5 { height: 300vh; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 6 — Handshake
+   ══════════════════════════════════════════════════════ */
+.scene--6 { height: 300vh; }
+
+/* ══════════════════════════════════════════════════════
+   SCENE 7 — CTA (static, no video)
+   Full black section, luxury guide + download
+   ══════════════════════════════════════════════════════ */
+.scene--7 {
+  position: relative;
+  z-index: 10;
+  background: var(--ink);
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+}
+
+.cta__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rem;
+  max-width: 1000px;
+  width: 100%;
+}
+
+/* Luxury guide card mockup */
+.guide-card {
+  position: relative;
+  width: min(360px, 90vw);
+  aspect-ratio: 8.5 / 11;
+  background: linear-gradient(145deg, #181410, #0d0b08);
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  padding: 3rem 2.5rem;
+  box-shadow:
+    0 0 0 1px rgba(201,168,76,0.06),
+    0 40px 80px rgba(0,0,0,0.8),
+    0 80px 160px rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.guide-card::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(201,168,76,0.12);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.guide-card__mark {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.8;
+}
+
+.guide-card__title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  color: #fff;
+  max-width: 18ch;
+}
+
+.guide-card__divider {
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.guide-card__sub {
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+}
+
+/* Chapter list inside card */
+.guide-card__chapters {
+  list-style: none;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.guide-card__chapters li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.4);
+  padding: 0.55rem 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.guide-card__chapters li::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* CTA copy */
+.cta__copy {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.cta__headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 300;
+  line-height: 1.2;
+  color: #fff;
+  max-width: 22ch;
+}
+
+.cta__sub {
+  font-size: 0.88rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+  max-width: 38ch;
+}
+
+/* Download button */
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9em;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #fff;
+  border: 1px solid var(--gold-dark);
+  padding: 1.1em 3em;
+  border-radius: 999px;
+  margin-top: 1rem;
+  position: relative;
+  overflow: hidden;
+  transition:
+    color 0.4s var(--ease-out-expo),
+    border-color 0.4s var(--ease-out-expo),
+    box-shadow 0.4s var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.btn-download::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: translateX(-102%);
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.btn-download:hover {
+  color: #000;
+  border-color: var(--gold);
+  box-shadow: 0 0 40px rgba(201,168,76,0.2);
+}
+
+.btn-download:hover::before {
+  transform: translateX(0);
+}
+
+.btn-download span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Arrow icon */
+.btn-download svg {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+.btn-download:hover svg {
+  transform: translateY(2px);
+}
+
+/* ══════════════════════════════════════════════════════
+   SCROLL PROGRESS — Thin gold line on right edge
+   ══════════════════════════════════════════════════════ */
+#scroll-progress {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 1.5px;
+  height: 0%;
+  background: linear-gradient(to bottom, transparent, var(--gold) 30%, var(--gold-light));
+  z-index: 200;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════
+   SCENE INDICATOR — Bottom center dots
+   ══════════════════════════════════════════════════════ */
+#scene-dots {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+#scene-dots.visible { opacity: 1; }
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.4s, transform 0.4s var(--ease-out-expo);
+}
+
+.dot.active {
+  background: var(--gold);
+  transform: scale(1.4);
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .scene--1, .scene--2, .scene--4 { height: 350vh; }
+  .scene--3, .scene--5, .scene--6 { height: 280vh; }
+
+  .scene__content { padding: 0 1.5rem; }
+  .scene--2 .scene__content { padding: 0 1.5rem; }
+
+  .cta__inner { gap: 3rem; }
+}
+
+@media (max-width: 480px) {
+  .scene__title { letter-spacing: -0.02em; }
+}
+
+/* ══════════════════════════════════════════════════════
+   UTILITY
+   ══════════════════════════════════════════════════════ */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}
