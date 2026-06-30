@@ -1,5 +1,19 @@
 'use strict';
 
+/* ─── 0. WATCHDOG ─────────────────────────────────────
+   Unconditional safety net — clears the loader even if
+   GSAP/Lenis fail to load from CDN (slow/blocked network).
+   ──────────────────────────────────────────────────── */
+setTimeout(() => {
+  const l = document.getElementById('loader');
+  if (l && !l.classList.contains('hidden')) {
+    l.classList.add('hidden');
+    setTimeout(() => { l.style.display = 'none'; }, 900);
+    document.getElementById('nav')?.classList.add('visible');
+    document.getElementById('scene-dots')?.classList.add('visible');
+  }
+}, 6000);
+
 const SCENE_CONFIG = [
   {
     id: 1, vh: 400, vs: 0.00, ve: 0.16,
@@ -54,32 +68,38 @@ const dotsEl     = document.getElementById('scene-dots');
    Use scrollerProxy so ScrollTrigger reads Lenis position
    instead of window.scrollY — fixes desktop drift.
    ──────────────────────────────────────────────────── */
-const lenis = new Lenis({
-  lerp: 0.1,
-  smoothWheel: true,
-  syncTouch: false,
-});
+let lenis = null;
 
-ScrollTrigger.scrollerProxy(document.documentElement, {
-  scrollTop(value) {
-    if (arguments.length) {
-      lenis.scrollTo(value, { immediate: true });
-    }
-    return lenis.scroll;
-  },
-  getBoundingClientRect() {
-    return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-  },
-  pinType: document.documentElement.style.transform ? 'transform' : 'fixed',
-});
+try {
+  lenis = new Lenis({
+    lerp: 0.1,
+    smoothWheel: true,
+    syncTouch: false,
+  });
 
-lenis.on('scroll', () => ScrollTrigger.update());
+  ScrollTrigger.scrollerProxy(document.documentElement, {
+    scrollTop(value) {
+      if (arguments.length) {
+        lenis.scrollTo(value, { immediate: true });
+      }
+      return lenis.scroll;
+    },
+    getBoundingClientRect() {
+      return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+    },
+    pinType: document.documentElement.style.transform ? 'transform' : 'fixed',
+  });
 
-gsap.ticker.add((time) => {
-  lenis.raf(time * 1000);
-});
+  lenis.on('scroll', () => ScrollTrigger.update());
 
-gsap.ticker.lagSmoothing(0);
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000);
+  });
+
+  gsap.ticker.lagSmoothing(0);
+} catch (err) {
+  console.warn('Lenis/GSAP unavailable — falling back to native scroll.', err);
+}
 
 /* ─── 2. LOADER PROGRESS ──────────────────────────── */
 function setLoaderProgress(pct) {
@@ -95,9 +115,15 @@ function initAfterVideo() {
   setTimeout(() => { loader.style.display = 'none'; }, 900);
   nav.classList.add('visible');
   dotsEl.classList.add('visible');
-  ScrollTrigger.refresh();
-  buildScenes();
-  buildScrollProgress();
+
+  if (typeof ScrollTrigger === 'undefined') return;
+  try {
+    ScrollTrigger.refresh();
+    buildScenes();
+    buildScrollProgress();
+  } catch (err) {
+    console.warn('Scene scroll-binding failed.', err);
+  }
 }
 
 video.addEventListener('progress', () => {
@@ -218,6 +244,7 @@ function buildScrollProgress() {
 
 /* ─── 5. CTA REVEAL ──────────────────────────────── */
 function buildCTA() {
+  if (typeof ScrollTrigger === 'undefined' || typeof gsap === 'undefined') return;
   const copy = document.querySelector('.cta__copy');
   if (copy) {
     ScrollTrigger.create({
@@ -240,9 +267,37 @@ function activateDot(sceneId) {
   });
 }
 
+/* ─── 7b. NAV MENU TOGGLE ─────────────────────────── */
+const burger = document.getElementById('nav-burger');
+const navMenu = document.getElementById('nav-menu');
+
+if (burger && navMenu) {
+  burger.addEventListener('click', () => {
+    const isOpen = navMenu.classList.toggle('open');
+    burger.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  navMenu.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => {
+      navMenu.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!navMenu.classList.contains('open')) return;
+    if (!navMenu.contains(e.target) && e.target !== burger) {
+      navMenu.classList.remove('open');
+      burger.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 /* ─── 7. RESIZE ──────────────────────────────────── */
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 250);
+  resizeTimer = setTimeout(() => {
+    if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();
+  }, 250);
 });
