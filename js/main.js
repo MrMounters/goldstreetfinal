@@ -114,6 +114,14 @@ function initAfterVideo() {
   buildScrollProgress();
 }
 
+const loaderPct = document.getElementById('loader-pct');
+
+function setLoaderProgress(pct) {
+  const clamped = Math.min(Math.round(pct), 99);
+  loaderBar.style.width = clamped + '%';
+  if (loaderPct) loaderPct.textContent = clamped + '%';
+}
+
 // Progress bar while video buffers
 video.addEventListener('progress', () => {
   if (!video.duration) return;
@@ -121,21 +129,23 @@ video.addEventListener('progress', () => {
     const buf = video.buffered;
     if (buf.length) {
       const pct = (buf.end(buf.length - 1) / video.duration) * 100;
-      loaderBar.style.width = Math.min(pct, 90) + '%';
+      setLoaderProgress(Math.min(pct, 90));
     }
   } catch (_) {}
 });
 
 // Wait for enough data to scrub
 video.addEventListener('canplaythrough', () => {
-  loaderBar.style.width = '100%';
+  setLoaderProgress(100);
+  if (loaderPct) loaderPct.textContent = '100%';
   setTimeout(initAfterVideo, 400);
 }, { once: true });
 
 // Fallback: if video loads slowly, unblock at 8s
 setTimeout(() => {
   if (loader.classList.contains('hidden')) return;
-  loaderBar.style.width = '100%';
+  setLoaderProgress(100);
+  if (loaderPct) loaderPct.textContent = '100%';
   initAfterVideo();
 }, 8000);
 
