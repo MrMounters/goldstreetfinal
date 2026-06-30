@@ -88,7 +88,12 @@ function setLoaderProgress(pct) {
   if (loaderPct) loaderPct.textContent = clamped + '%';
 }
 
+let appInitialized = false;
+
 function initAfterVideo() {
+  if (appInitialized) return;
+  appInitialized = true;
+
   loaderBar.style.width = '100%';
   if (loaderPct) loaderPct.textContent = '100%';
   loader.classList.add('hidden');
