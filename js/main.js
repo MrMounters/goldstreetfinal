@@ -25,7 +25,7 @@ const SCENE_CONFIG = [
   {
     id: 2, vh: 400, vs: 0.16, ve: 0.33,
     overlays: [
-      { sel: '.s2-eyebrow', type: 'fade-up', at: [0.10, 0.22], out: [0.78, 0.92] },
+      { sel: '.s2-eyebrow', type: 'pills-stagger', at: [0.10, 0.28], out: [0.78, 0.92] },
       { sel: '.s2-title',   type: 'fade-up', at: [0.16, 0.30], out: [0.78, 0.92], delay: 0.06 },
       { sel: '.s2-sub',     type: 'fade-up', at: [0.22, 0.36], out: [0.78, 0.92], delay: 0.12 },
     ]
@@ -39,12 +39,14 @@ const SCENE_CONFIG = [
   },
   {
     id: 4, vh: 400, vs: 0.47, ve: 0.64,
-    overlays: []
+    overlays: [
+      { sel: '.s4-eyebrow', type: 'pills-stagger', at: [0.18, 0.36], out: [0.72, 0.88] },
+    ]
   },
   {
     id: 5, vh: 300, vs: 0.64, ve: 0.79,
     overlays: [
-      { sel: '.s5-eyebrow', type: 'fade-up', at: [0.12, 0.26], out: [0.74, 0.90] },
+      { sel: '.s5-eyebrow', type: 'pills-stagger', at: [0.12, 0.30], out: [0.74, 0.90] },
       { sel: '.s5-title',   type: 'fade-up', at: [0.18, 0.34], out: [0.74, 0.90], delay: 0.08 },
     ]
   },
@@ -63,40 +65,46 @@ const loaderPct  = document.getElementById('loader-pct');
 const nav        = document.getElementById('nav');
 const progressEl = document.getElementById('scroll-progress');
 const dotsEl     = document.getElementById('scene-dots');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ─── 1. LENIS + GSAP SYNC ────────────────────────────
    Use scrollerProxy so ScrollTrigger reads Lenis position
    instead of window.scrollY — fixes desktop drift.
+   Wrapped in try/catch: a CDN failure must not crash init.
    ──────────────────────────────────────────────────── */
 let lenis = null;
 
 try {
-  lenis = new Lenis({
-    lerp: 0.1,
-    smoothWheel: true,
-    syncTouch: false,
-  });
+  if (!reducedMotion) {
+    lenis = new Lenis({
+      lerp: 0.1,
+      smoothWheel: true,
+      syncTouch: false,
+    });
 
-  ScrollTrigger.scrollerProxy(document.documentElement, {
-    scrollTop(value) {
-      if (arguments.length) {
-        lenis.scrollTo(value, { immediate: true });
-      }
-      return lenis.scroll;
-    },
-    getBoundingClientRect() {
-      return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-    },
-    pinType: document.documentElement.style.transform ? 'transform' : 'fixed',
-  });
+    ScrollTrigger.scrollerProxy(document.documentElement, {
+      scrollTop(value) {
+        if (arguments.length) {
+          lenis.scrollTo(value, { immediate: true });
+        }
+        return lenis.scroll;
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+      },
+      pinType: document.documentElement.style.transform ? 'transform' : 'fixed',
+    });
 
-  lenis.on('scroll', () => ScrollTrigger.update());
+    lenis.on('scroll', () => ScrollTrigger.update());
 
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
 
-  gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(0);
+  } else {
+    window.addEventListener('scroll', () => ScrollTrigger.update(), { passive: true });
+  }
 } catch (err) {
   console.warn('Lenis/GSAP unavailable — falling back to native scroll.', err);
 }
@@ -108,7 +116,12 @@ function setLoaderProgress(pct) {
   if (loaderPct) loaderPct.textContent = clamped + '%';
 }
 
+let appInitialized = false;
+
 function initAfterVideo() {
+  if (appInitialized) return;
+  appInitialized = true;
+
   loaderBar.style.width = '100%';
   if (loaderPct) loaderPct.textContent = '100%';
   loader.classList.add('hidden');
@@ -121,6 +134,9 @@ function initAfterVideo() {
     ScrollTrigger.refresh();
     buildScenes();
     buildScrollProgress();
+    buildWatermark();
+    initScrollHint();
+    initAmbient();
   } catch (err) {
     console.warn('Scene scroll-binding failed.', err);
   }
@@ -142,21 +158,45 @@ video.addEventListener('canplaythrough', () => {
   setTimeout(initAfterVideo, 400);
 }, { once: true });
 
-// Fallback at 8s
 setTimeout(() => {
   if (loader.classList.contains('hidden')) return;
   setLoaderProgress(100);
   initAfterVideo();
 }, 8000);
 
-// Pause on first play — scroll scrubbing controls currentTime
 video.addEventListener('play', () => { video.pause(); }, { once: true });
-
 video.load();
 
-/* ─── 3. SCENE SCROLLTRIGGERS ────────────────────────
-   Each section scrubs the video + animates overlays.
-   ──────────────────────────────────────────────────── */
+/* ─── 3. SCENE SCROLLTRIGGERS ──────────────────────── */
+function computeAlpha(p, at, out, delay = 0) {
+  let inAlpha = 0;
+  if (p >= at[0] + delay && p <= at[1] + delay) {
+    inAlpha = (p - (at[0] + delay)) / (at[1] - at[0]);
+  } else if (p > at[1] + delay) {
+    inAlpha = 1;
+  }
+
+  let outAlpha = 1;
+  if (out && p >= out[0] && p <= out[1]) {
+    outAlpha = 1 - (p - out[0]) / (out[1] - out[0]);
+  } else if (out && p > out[1]) {
+    outAlpha = 0;
+  }
+
+  return Math.max(0, Math.min(1, Math.min(inAlpha, outAlpha)));
+}
+
+function applyOverlayMotion(el, type, inAlpha, alpha) {
+  el.style.opacity = alpha;
+
+  if (type === 'fade-up') {
+    el.style.transform = `translateY(${(1 - Math.min(inAlpha, 1)) * 22}px)`;
+  }
+  if (type === 'scale-fade') {
+    el.style.transform = `scale(${0.88 + 0.12 * Math.min(inAlpha, 1)})`;
+  }
+}
+
 function buildScenes() {
   const dur = video.duration || 1;
 
@@ -171,7 +211,7 @@ function buildScenes() {
       trigger: scene,
       start:   'top top',
       end:     'bottom bottom',
-      scrub:   0.8,
+      scrub:   reducedMotion ? 0 : 0.8,
       onUpdate(self) {
         const t = segStart + self.progress * segLen;
         video.currentTime = Math.max(0, Math.min(dur, t));
@@ -201,29 +241,29 @@ function buildScenes() {
         onUpdate(self) {
           const p = self.progress;
 
-          let inAlpha = 0;
+          if (type === 'pills-stagger') {
+            const pills = el.querySelectorAll('.eyebrow-pill');
+            const containerAlpha = computeAlpha(p, at, out, delay);
+            el.style.opacity = containerAlpha;
+
+            pills.forEach((pill, index) => {
+              const pillDelay = delay + index * 0.08;
+              const pillInAlpha = computeAlpha(p, at, out, pillDelay);
+              const pillAlpha = Math.min(containerAlpha, pillInAlpha);
+              pill.style.opacity = pillAlpha;
+              pill.style.transform = `translateY(${(1 - Math.min(pillInAlpha, 1)) * 14}px)`;
+            });
+            return;
+          }
+
+          const inAlpha = computeAlpha(p, at, out, delay);
+          let rawInAlpha = 0;
           if (p >= at[0] + delay && p <= at[1] + delay) {
-            inAlpha = (p - (at[0] + delay)) / ((at[1] - at[0]));
+            rawInAlpha = (p - (at[0] + delay)) / (at[1] - at[0]);
           } else if (p > at[1] + delay) {
-            inAlpha = 1;
+            rawInAlpha = 1;
           }
-
-          let outAlpha = 1;
-          if (out && p >= out[0] && p <= out[1]) {
-            outAlpha = 1 - (p - out[0]) / (out[1] - out[0]);
-          } else if (out && p > out[1]) {
-            outAlpha = 0;
-          }
-
-          const alpha   = Math.max(0, Math.min(1, Math.min(inAlpha, outAlpha)));
-          el.style.opacity = alpha;
-
-          if (type === 'fade-up') {
-            el.style.transform = `translateY(${(1 - Math.min(inAlpha, 1)) * 22}px)`;
-          }
-          if (type === 'scale-fade') {
-            el.style.transform = `scale(${0.88 + 0.12 * Math.min(inAlpha, 1)})`;
-          }
+          applyOverlayMotion(el, type, rawInAlpha, inAlpha);
         },
       });
     });
@@ -267,7 +307,7 @@ function activateDot(sceneId) {
   });
 }
 
-/* ─── 7b. NAV MENU TOGGLE ─────────────────────────── */
+/* ─── 7. NAV MENU TOGGLE ─────────────────────────── */
 const burger = document.getElementById('nav-burger');
 const navMenu = document.getElementById('nav-menu');
 
@@ -293,7 +333,75 @@ if (burger && navMenu) {
   });
 }
 
-/* ─── 7. RESIZE ──────────────────────────────────── */
+/* ─── 8. WATERMARK ───────────────────────────────── */
+function buildWatermark() {
+  const wm = document.getElementById('gs-watermark');
+  if (!wm || reducedMotion) return;
+
+  SCENE_CONFIG.forEach((cfg) => {
+    const scene = document.querySelector(`.scene--${cfg.id}`);
+    if (!scene) return;
+
+    ScrollTrigger.create({
+      trigger: scene,
+      start: 'top 75%',
+      end: 'bottom 25%',
+      onEnter:     () => gsap.to(wm, { opacity: 0.038, duration: 1.1, ease: 'power2.out' }),
+      onLeave:     () => gsap.to(wm, { opacity: 0.012, duration: 0.7, ease: 'power2.out' }),
+      onEnterBack: () => gsap.to(wm, { opacity: 0.038, duration: 1.1, ease: 'power2.out' }),
+      onLeaveBack: () => gsap.to(wm, { opacity: 0.012, duration: 0.7, ease: 'power2.out' }),
+    });
+  });
+}
+
+/* ─── 9. SCROLL HINT ───────────────────────────── */
+function initScrollHint() {
+  const hint = document.querySelector('.scroll-hint');
+  if (!hint) return;
+
+  ScrollTrigger.create({
+    trigger: '.scene--1',
+    start: 'top top',
+    end: '+=120',
+    onUpdate(self) {
+      hint.style.opacity = Math.max(0, 1 - self.progress * 3.5);
+    },
+  });
+}
+
+/* ─── 10. AMBIENT SOUND ──────────────────────────── */
+function initAmbient() {
+  const toggle = document.getElementById('ambient-toggle');
+  const audio  = document.getElementById('ambient-audio');
+  const label  = toggle?.querySelector('.ambient-toggle__label');
+  if (!toggle || !audio) return;
+
+  toggle.hidden = false;
+  toggle.classList.add('ambient-toggle--pulse');
+
+  toggle.addEventListener('click', async () => {
+    try {
+      if (audio.paused) {
+        audio.volume = 0.35;
+        await audio.play();
+        toggle.classList.add('is-on');
+        toggle.classList.remove('ambient-toggle--pulse');
+        toggle.setAttribute('aria-pressed', 'true');
+        toggle.setAttribute('aria-label', 'Mute ambient sound');
+        if (label) label.textContent = 'On';
+      } else {
+        audio.pause();
+        toggle.classList.remove('is-on');
+        toggle.classList.add('ambient-toggle--pulse');
+        toggle.setAttribute('aria-pressed', 'false');
+        toggle.setAttribute('aria-label', 'Unmute ambient sound');
+        if (label) label.textContent = 'Unmute';
+      }
+    } catch (_) {}
+  });
+}
+
+/* ─── 11. RESIZE ─────────────────────────────────── */
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
