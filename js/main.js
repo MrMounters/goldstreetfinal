@@ -165,7 +165,22 @@ setTimeout(() => {
   initAfterVideo();
 }, 8000);
 
-video.addEventListener('play', () => { video.pause(); }, { once: true });
+// iOS Safari re-shows its native "tap to play" overlay on a paused
+// video specifically when a poster image is still attached — clear
+// it once a real frame has rendered so the paused state (which we
+// rely on for scroll-scrubbing) no longer reads as "not yet started".
+// Tied to whichever fires first: autoplay isn't guaranteed to reach
+// 'play' in every browser context, but a decoded frame (loadeddata)
+// is enough on its own to make the poster redundant.
+let posterCleared = false;
+function clearPoster() {
+  if (posterCleared) return;
+  posterCleared = true;
+  video.removeAttribute('poster');
+  video.controls = false;
+}
+video.addEventListener('play', () => { video.pause(); clearPoster(); }, { once: true });
+video.addEventListener('loadeddata', clearPoster, { once: true });
 video.load();
 
 /* ─── 3. SCENE SCROLLTRIGGERS ──────────────────────── */
