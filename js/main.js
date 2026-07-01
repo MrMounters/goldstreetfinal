@@ -129,6 +129,7 @@ function initAfterVideo() {
 
   initTicker();
   initAmbient();
+  initIdleReminder();
 
   if (typeof ScrollTrigger === 'undefined') return;
   try {
@@ -136,7 +137,6 @@ function initAfterVideo() {
     buildScenes();
     buildScrollProgress();
     buildWatermark();
-    initScrollHint();
     initPressShine();
   } catch (err) {
     console.warn('Scene scroll-binding failed.', err);
@@ -414,19 +414,29 @@ function initPressShine() {
   });
 }
 
-/* ─── 9. SCROLL HINT ───────────────────────────── */
-function initScrollHint() {
-  const hint = document.querySelector('.scroll-hint');
-  if (!hint) return;
+/* ─── 9. IDLE SCROLL REMINDER ─────────────────────── */
+function initIdleReminder() {
+  const arrow = document.getElementById('scroll-arrow');
+  if (!arrow) return;
 
-  ScrollTrigger.create({
-    trigger: '.scene--1',
-    start: 'top top',
-    end: '+=120',
-    onUpdate(self) {
-      hint.style.opacity = Math.max(0, 1 - self.progress * 3.5);
-    },
-  });
+  const IDLE_DELAY = 4000;
+  let idleTimer = null;
+
+  const markActive = () => {
+    arrow.classList.remove('idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => {
+      arrow.classList.add('idle');
+    }, IDLE_DELAY);
+  };
+
+  if (lenis) {
+    lenis.on('scroll', markActive);
+  } else {
+    window.addEventListener('scroll', markActive, { passive: true });
+  }
+
+  markActive();
 }
 
 /* ─── 10. AMBIENT SOUND ──────────────────────────── */
