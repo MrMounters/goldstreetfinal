@@ -1218,14 +1218,38 @@ a { color: inherit; text-decoration: none; }
   animation: scroll-arrow-nudge 1.6s ease-in-out infinite;
 }
 
+/* Bold entrance — plays once on first reveal, then hands off to the
+   quieter .idle behavior above after a few seconds. */
+.scroll-arrow.intro {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.92);
+  animation: scroll-arrow-nudge-intro 1.3s ease-in-out infinite;
+}
+
+.scroll-arrow.intro .scroll-arrow__label {
+  color: var(--gold-light);
+}
+
+.scroll-arrow.intro svg {
+  width: 32px;
+  height: 20px;
+  filter: drop-shadow(0 0 10px rgba(201, 168, 76, 0.45));
+}
+
 @keyframes scroll-arrow-nudge {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(6px); }
 }
 
+@keyframes scroll-arrow-nudge-intro {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(10px) scale(1.08); }
+}
+
 @media (max-width: 640px) {
   #scene-dots { right: 1rem; gap: 0.5rem; }
   .scroll-arrow svg { width: 20px; height: 13px; }
+  .scroll-arrow.intro svg { width: 26px; height: 16px; }
   .scroll-arrow__label { font-size: 0.5rem; letter-spacing: 0.22em; }
 }
 

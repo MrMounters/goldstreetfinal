@@ -334,6 +334,37 @@ if (burger && navMenu) {
   });
 }
 
+/* ─── 7c. IN-PAGE ANCHOR SCROLL ───────────────────────
+   Lenis drives actual scroll position via ScrollTrigger's
+   scrollerProxy, so a native browser anchor-jump fights it and
+   lands in the wrong spot. Route hash links through lenis.scrollTo()
+   instead, offset by the fixed ticker+nav height so the destination
+   isn't hidden underneath them.
+   ──────────────────────────────────────────────────── */
+function scrollToHash(hash) {
+  const target = document.querySelector(hash);
+  if (!target) return;
+
+  const tickerEl = document.getElementById('ticker');
+  const headerHeight = (tickerEl?.offsetHeight || 0) + (nav?.offsetHeight || 0);
+
+  if (lenis) {
+    lenis.scrollTo(target, { offset: -headerHeight, duration: 1.4 });
+  } else {
+    const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+    window.scrollTo({ top, behavior: 'smooth' });
+  }
+}
+
+document.querySelectorAll('.nav__cta, .nav__menu-link').forEach((link) => {
+  link.addEventListener('click', (e) => {
+    const hash = link.getAttribute('href');
+    if (!hash || hash.charAt(0) !== '#') return;
+    e.preventDefault();
+    scrollToHash(hash);
+  });
+});
+
 /* ─── 8. WATERMARK ───────────────────────────────── */
 function buildWatermark() {
   const wm = document.getElementById('gs-watermark');
@@ -420,6 +451,7 @@ function initIdleReminder() {
   if (!arrow) return;
 
   const IDLE_DELAY = 2200;
+  const INTRO_DURATION = 5000;
   let idleTimer = null;
 
   const markActive = () => {
@@ -436,7 +468,14 @@ function initIdleReminder() {
     window.addEventListener('scroll', markActive, { passive: true });
   }
 
-  markActive();
+  // Bold entrance on first reveal — settles into the quiet idle-only
+  // reminder above once the intro window elapses, regardless of
+  // whether the visitor has scrolled yet.
+  arrow.classList.add('intro');
+  setTimeout(() => {
+    arrow.classList.remove('intro');
+    markActive();
+  }, INTRO_DURATION);
 }
 
 /* ─── 10. AMBIENT SOUND ──────────────────────────── */
