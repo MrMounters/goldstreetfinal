@@ -71,6 +71,15 @@
     <div class="loader__bar"></div>
     <span class="loader__pct" id="loader-pct">0%</span>
   </div>
+
+  <div class="loader__cadence" aria-hidden="true">
+    <svg class="loader__phone" viewBox="0 0 46 92" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="1.5" y="1.5" width="43" height="89" rx="9" stroke="rgba(201,168,76,0.35)" stroke-width="1.4"/>
+      <rect x="1.5" y="1.5" width="43" height="89" rx="9" fill="rgba(10,9,7,0.5)"/>
+      <circle class="loader__finger" cx="23" cy="20" r="4.5" fill="#e2c97e"/>
+    </svg>
+    <span class="loader__cadence-label">This is the pace</span>
+  </div>
 </div>
 
 <!-- VIDEO LAYER -->
@@ -170,7 +179,11 @@
       </div>
       <div class="scroll-hint" aria-hidden="true">
         <div class="scroll-hint__pill">
-          <span class="scroll-hint__label">Scroll to begin</span>
+          <span class="scroll-hint__label">
+            <span class="scroll-hint__word">scroll</span>
+            <span class="scroll-hint__word scroll-hint__word--accent">slowly</span>
+            <span class="scroll-hint__word">to begin</span>
+          </span>
           <span class="scroll-hint__line" aria-hidden="true"></span>
         </div>
       </div>
@@ -180,6 +193,13 @@
   <!-- SCENE 2 -->
   <section class="scene scene--2" aria-label="The lobby">
     <div class="scene__frame">
+      <div class="firm-wordmarks firm-wordmarks--bg" aria-hidden="true">
+        <span class="firm-wordmarks__item">Evercore</span>
+        <span class="firm-wordmarks__item">Moelis</span>
+        <span class="firm-wordmarks__item">Qatalyst Partners</span>
+        <span class="firm-wordmarks__item">Morgan Stanley</span>
+        <span class="firm-wordmarks__item">J.P. Morgan</span>
+      </div>
       <div class="scene__content">
         <span class="scene__eyebrow s2-eyebrow scene__eyebrow--pills">
           <span class="eyebrow-pill">Bespoke Preparation</span>
@@ -304,6 +324,15 @@
         By invitation only.<br />
         <em>If you're a top candidate, we'll find you.</em>
       </p>
+    </div>
+
+    <!-- Firm wordmarks — footer variant -->
+    <div class="firm-wordmarks firm-wordmarks--footer" aria-label="Placement destinations">
+      <span class="firm-wordmarks__item">Evercore</span>
+      <span class="firm-wordmarks__item">Moelis</span>
+      <span class="firm-wordmarks__item">Qatalyst Partners</span>
+      <span class="firm-wordmarks__item">Morgan Stanley</span>
+      <span class="firm-wordmarks__item">J.P. Morgan</span>
     </div>
 
     <!-- Press -->

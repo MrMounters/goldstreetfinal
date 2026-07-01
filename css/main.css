@@ -249,6 +249,43 @@ a { color: inherit; text-decoration: none; }
   color: rgba(201,168,76,0.5);
 }
 
+.loader__cadence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+
+.loader__phone {
+  width: 30px;
+  height: 60px;
+}
+
+.loader__finger {
+  animation: loader-finger-slide 1.8s ease-in-out infinite;
+  transform-box: fill-box;
+}
+
+@keyframes loader-finger-slide {
+  0%   { transform: translateY(0);    opacity: 0.35; }
+  45%  { transform: translateY(35px); opacity: 1; }
+  100% { transform: translateY(35px); opacity: 0.25; }
+}
+
+.loader__cadence-label {
+  font-family: var(--font-ui);
+  font-size: 0.52rem;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(201,168,76,0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader__finger { animation: none; }
+}
+
 
 /* ══════════════════════════════════════════════════════
    NAV
@@ -514,6 +551,64 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 
+/* ══════════════════════════════════════════════════════
+   FIRM WORDMARKS — background texture + footer variants
+   ══════════════════════════════════════════════════════ */
+.firm-wordmarks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.firm-wordmarks__item {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  white-space: nowrap;
+}
+
+.firm-wordmarks--bg {
+  position: absolute;
+  top: 12%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  gap: 2.2rem;
+  padding: 0 2rem;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.firm-wordmarks--bg .firm-wordmarks__item {
+  font-size: clamp(1rem, 2.4vw, 1.6rem);
+  letter-spacing: 0.06em;
+}
+
+.firm-wordmarks--footer {
+  width: 100%;
+  max-width: 480px;
+  margin: 2rem auto 0;
+  gap: 1.4rem;
+  padding: 1.6rem 1.5rem 0;
+  border-top: 1px solid rgba(201,168,76,0.08);
+  opacity: 0.32;
+}
+
+.firm-wordmarks--footer .firm-wordmarks__item {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+  .firm-wordmarks--bg { gap: 1.2rem; top: 10%; }
+  .firm-wordmarks--bg .firm-wordmarks__item { font-size: 0.85rem; }
+  .firm-wordmarks--footer { gap: 0.9rem 1.1rem; }
+  .firm-wordmarks--footer .firm-wordmarks__item { font-size: 0.62rem; }
+}
+
 .scene--dark-bottom .scene__frame::after {
   content: '';
   position: absolute;
@@ -695,11 +790,28 @@ a { color: inherit; text-decoration: none; }
 }
 
 .scroll-hint__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.scroll-hint__word {
   font-family: var(--font-ui);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   font-weight: 500;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  text-transform: lowercase;
+  color: rgba(226, 201, 126, 0.65);
+  line-height: 1.3;
+}
+
+.scroll-hint__word--accent {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
   color: var(--gold-light);
 }
 
@@ -1148,7 +1260,8 @@ a { color: inherit; text-decoration: none; }
     padding: 0.32em 0.65em;
   }
   .scroll-hint__pill { padding: 0.75rem 1.1rem 0.85rem; }
-  .scroll-hint__label { font-size: 0.56rem; letter-spacing: 0.22em; }
+  .scroll-hint__word { font-size: 0.54rem; letter-spacing: 0.2em; }
+  .scroll-hint__word--accent { font-size: 0.66rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
