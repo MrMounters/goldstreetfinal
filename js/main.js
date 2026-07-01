@@ -342,6 +342,17 @@ if (burger && navMenu) {
    isn't hidden underneath them.
    ──────────────────────────────────────────────────── */
 function scrollToHash(hash) {
+  // Top of the page has nothing to reveal above it — skip the
+  // header-offset math and just scroll to 0.
+  if (hash === '#top') {
+    if (lenis) {
+      lenis.scrollTo(0, { duration: 1.4 });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    return;
+  }
+
   const target = document.querySelector(hash);
   if (!target) return;
 
@@ -356,7 +367,7 @@ function scrollToHash(hash) {
   }
 }
 
-document.querySelectorAll('.nav__cta, .nav__menu-link').forEach((link) => {
+document.querySelectorAll('.nav__cta, .nav__menu-link, .nav__logo').forEach((link) => {
   link.addEventListener('click', (e) => {
     const hash = link.getAttribute('href');
     if (!hash || hash.charAt(0) !== '#') return;

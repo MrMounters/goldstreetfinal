@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Gold Street — Wall Street Recruiting</title>
   <meta name="description" content="The leading Wall Street recruiting firm. Bespoke preparation. Elite placements." />
   <link rel="canonical" href="https://goldstreetfinal.vercel.app/" />
+  <meta name="theme-color" content="#0a0a0a" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
 
   <!-- Open Graph / iMessage / link sharing -->
   <meta property="og:type" content="website" />
@@ -46,7 +54,7 @@
 
   <link rel="stylesheet" href="css/main.css" />
 </head>
-<body>
+<body id="top">
 
 <!-- LIVE MARKET TICKER -->
 <div id="ticker" class="ticker" aria-label="Live market indices">
@@ -111,7 +119,7 @@
 
 <!-- NAV -->
 <header id="nav" role="banner">
-  <a href="#" class="nav__logo" aria-label="Gold Street">
+  <a href="#top" class="nav__logo" aria-label="Gold Street">
     <svg class="nav__logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <rect width="36" height="36" rx="5" fill="#1a1710"/>
       <rect width="36" height="36" rx="5" fill="url(#gs-border)" opacity="0.4"/>
@@ -378,6 +386,18 @@
 
       </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <svg class="site-footer__mark" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M28 32 C24 32 20 28 18 24 C16 20 14 17 11 16 C8 15 6 17 5 20" stroke="currentColor" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <p class="site-footer__mission">
+        Gold Street LLC is a Wall Street recruiting and admissions consulting firm.
+        All engagements are confidential and by invitation.
+      </p>
+      <p class="site-footer__copyright">&copy; 2022&ndash;2026 Gold Street LLC. All rights reserved.</p>
+    </footer>
 
   </section>
 
