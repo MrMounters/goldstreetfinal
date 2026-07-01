@@ -47,31 +47,27 @@ a { color: inherit; text-decoration: none; }
   height: 100dvh;
   z-index: 0;
   overflow: hidden;
-  background: #000;
+  background: #000 url('assets/images/video-poster.jpg') center/cover no-repeat;
 }
 
+/* The <video> element is only a decode source now — never shown,
+   never interactable, so it can never surface native playback UI. */
 #video-bg video {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#video-bg canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: none;
+  display: block;
   pointer-events: none;
-}
-
-/* Suppress native play/pause overlay — video is intentionally kept
-   paused while JS drives currentTime via scroll, so browsers must
-   never show a "tap to play" affordance over it. */
-#video-bg video::-webkit-media-controls,
-#video-bg video::-webkit-media-controls-start-playback-button,
-#video-bg video::-webkit-media-controls-play-button,
-#video-bg video::-webkit-media-controls-panel,
-#video-bg video::-webkit-media-controls-overlay-play-button {
-  display: none !important;
-  -webkit-appearance: none !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
 #video-scrim {

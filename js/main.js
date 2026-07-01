@@ -165,23 +165,52 @@ setTimeout(() => {
   initAfterVideo();
 }, 8000);
 
-// iOS Safari re-shows its native "tap to play" overlay on a paused
-// video specifically when a poster image is still attached — clear
-// it once a real frame has rendered so the paused state (which we
-// rely on for scroll-scrubbing) no longer reads as "not yet started".
-// Tied to whichever fires first: autoplay isn't guaranteed to reach
-// 'play' in every browser context, but a decoded frame (loadeddata)
-// is enough on its own to make the poster redundant.
-let posterCleared = false;
-function clearPoster() {
-  if (posterCleared) return;
-  posterCleared = true;
-  video.removeAttribute('poster');
-  video.controls = false;
-}
-video.addEventListener('play', () => { video.pause(); clearPoster(); }, { once: true });
-video.addEventListener('loadeddata', clearPoster, { once: true });
+video.addEventListener('play', () => { video.pause(); }, { once: true });
 video.load();
+
+/* ─── 2b. CANVAS FRAME RENDERER ───────────────────────
+   The <video> element is never shown — it only decodes frames.
+   A persistent canvas is what's actually painted, so there is no
+   native <video> UI (play button, controls, poster) that any
+   browser can surface, on any device.
+   ──────────────────────────────────────────────────── */
+const canvas = document.getElementById('scene-canvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
+const videoBgEl = document.getElementById('video-bg');
+let canvasW = 0;
+let canvasH = 0;
+
+function resizeCanvas() {
+  if (!canvas || !videoBgEl) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const rect = videoBgEl.getBoundingClientRect();
+  canvasW = Math.max(1, Math.round(rect.width * dpr));
+  canvasH = Math.max(1, Math.round(rect.height * dpr));
+  canvas.width = canvasW;
+  canvas.height = canvasH;
+}
+
+function drawFrame() {
+  if (ctx && video.videoWidth && video.videoHeight) {
+    const vw = video.videoWidth;
+    const vh = video.videoHeight;
+    // Emulate CSS object-fit: cover — crop the source to match the
+    // canvas's aspect ratio, always filling it edge to edge.
+    const scale = Math.max(canvasW / vw, canvasH / vh);
+    const sw = canvasW / scale;
+    const sh = canvasH / scale;
+    const sx = (vw - sw) / 2;
+    const sy = (vh - sh) / 2;
+    ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvasW, canvasH);
+  }
+  requestAnimationFrame(drawFrame);
+}
+
+if (canvas && ctx) {
+  resizeCanvas();
+  video.addEventListener('loadeddata', resizeCanvas, { once: true });
+  requestAnimationFrame(drawFrame);
+}
 
 /* ─── 3. SCENE SCROLLTRIGGERS ──────────────────────── */
 function computeAlpha(p, at, out, delay = 0) {
@@ -539,6 +568,7 @@ function initAmbient() {
 /* ─── 11. RESIZE ─────────────────────────────────── */
 let resizeTimer;
 window.addEventListener('resize', () => {
+  resizeCanvas();
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.refresh();

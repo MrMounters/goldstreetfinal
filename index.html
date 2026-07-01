@@ -90,7 +90,10 @@
   </div>
 </div>
 
-<!-- VIDEO LAYER -->
+<!-- VIDEO LAYER — <video> decodes off-screen, <canvas> is what's
+     actually shown. Canvas has no native playback UI whatsoever, so
+     this sidesteps iOS Safari's "tap to play" overlay entirely
+     rather than fighting it with CSS/attribute hacks. -->
 <div id="video-bg" aria-hidden="true">
   <video
     id="scene-video"
@@ -99,7 +102,6 @@
     playsinline
     webkit-playsinline="true"
     preload="auto"
-    poster="assets/images/video-poster.jpg"
     disablePictureInPicture
     disableRemotePlayback
     controlsList="nodownload nofullscreen noremoteplayback"
@@ -107,6 +109,7 @@
   >
     <source src="assets/videos/scene.mp4" type="video/mp4" />
   </video>
+  <canvas id="scene-canvas" aria-hidden="true"></canvas>
 </div>
 
 <div id="video-scrim" aria-hidden="true"></div>
