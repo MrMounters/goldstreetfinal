@@ -419,7 +419,7 @@ function initIdleReminder() {
   const arrow = document.getElementById('scroll-arrow');
   if (!arrow) return;
 
-  const IDLE_DELAY = 4000;
+  const IDLE_DELAY = 2200;
   let idleTimer = null;
 
   const markActive = () => {
