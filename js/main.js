@@ -127,6 +127,9 @@ function initAfterVideo() {
   nav.classList.add('visible');
   dotsEl.classList.add('visible');
 
+  initTicker();
+  initAmbient();
+
   if (typeof ScrollTrigger === 'undefined') return;
   try {
     ScrollTrigger.refresh();
@@ -134,7 +137,6 @@ function initAfterVideo() {
     buildScrollProgress();
     buildWatermark();
     initScrollHint();
-    initAmbient();
     initPressShine();
   } catch (err) {
     console.warn('Scene scroll-binding failed.', err);
@@ -351,6 +353,48 @@ function buildWatermark() {
       onLeaveBack: () => gsap.to(wm, { opacity: 0.012, duration: 0.7, ease: 'power2.out' }),
     });
   });
+}
+
+/* ─── 7b. LIVE MARKET TICKER ──────────────────────── */
+function renderTickerItems(indices) {
+  const sets = document.querySelectorAll('.ticker__set');
+  if (!sets.length) return;
+
+  const itemsHtml = indices.map(({ name, price, changePercent }) => {
+    const isUp = (changePercent ?? 0) >= 0;
+    const sign = isUp ? '+' : '−';
+    const pct = Math.abs(changePercent ?? 0).toFixed(2);
+    const priceStr = price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+    return `
+      <span class="ticker__item">
+        <span class="ticker__name">${name}</span>
+        <span class="ticker__price">${priceStr}</span>
+        <span class="ticker__change ${isUp ? 'ticker__change--up' : 'ticker__change--down'}">${sign}${pct}%</span>
+      </span>
+    `;
+  }).join('');
+
+  sets.forEach((set) => { set.innerHTML = itemsHtml; });
+}
+
+function initTicker() {
+  const track = document.getElementById('ticker-track');
+  if (!track) return;
+
+  const fetchIndices = () => {
+    fetch('/api/indices')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && Array.isArray(data.indices) && data.indices.length) {
+          renderTickerItems(data.indices);
+        }
+      })
+      .catch(() => { /* keep last-known values on failure */ });
+  };
+
+  fetchIndices();
+  setInterval(fetchIndices, 60000);
 }
 
 /* ─── 8b. PRESS STRIP SHINE ───────────────────────── */
