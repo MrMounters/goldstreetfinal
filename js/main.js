@@ -75,7 +75,7 @@ let lenis = null;
 try {
   if (!reducedMotion) {
     lenis = new Lenis({
-      lerp: 0.1,
+      lerp: 0.08,
       smoothWheel: true,
       syncTouch: false,
     });
@@ -190,7 +190,7 @@ function resizeCanvas() {
   canvas.height = canvasH;
 }
 
-function drawFrame() {
+function paintVideoFrame() {
   if (ctx && video.videoWidth && video.videoHeight) {
     const vw = video.videoWidth;
     const vh = video.videoHeight;
@@ -203,14 +203,70 @@ function drawFrame() {
     const sy = (vh - sh) / 2;
     ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvasW, canvasH);
   }
-  requestAnimationFrame(drawFrame);
 }
 
 if (canvas && ctx) {
   resizeCanvas();
-  video.addEventListener('loadeddata', resizeCanvas, { once: true });
-  requestAnimationFrame(drawFrame);
+  video.addEventListener('loadeddata', () => { resizeCanvas(); paintVideoFrame(); }, { once: true });
+
+  if ('requestVideoFrameCallback' in video) {
+    // Paint only when the browser actually presents a new decoded
+    // frame — never blits a stale mid-seek frame, and does no work
+    // while the displayed frame is unchanged.
+    const onFrame = () => {
+      paintVideoFrame();
+      video.requestVideoFrameCallback(onFrame);
+    };
+    video.requestVideoFrameCallback(onFrame);
+    // Repaint on resize too (rVFC won't fire without a new frame).
+    window.addEventListener('resize', paintVideoFrame);
+  } else {
+    // Fallback: continuous rAF loop (older Firefox).
+    const loop = () => { paintVideoFrame(); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  }
 }
+
+/* ─── 2c. SEEK CONTROLLER ─────────────────────────────
+   Seeking is asynchronous: assigning currentTime while a previous
+   seek is still decoding makes browsers thrash and stutter. Gate to
+   one in-flight seek, latest-wins — scroll updates only record the
+   desired time, and the next seek is issued the moment the current
+   one completes. Targets are quantized to frame boundaries so
+   sub-frame scroll deltas don't trigger pointless decodes.
+   ──────────────────────────────────────────────────── */
+const FRAME_DURATION = 1 / 30;
+let pendingSeekTime = null;
+let seekInFlight = false;
+let seekStartedAt = 0;
+
+function pumpSeek() {
+  // Stall guard: a seek into an unbuffered region can leave 'seeked'
+  // hanging — don't let that wedge scrubbing permanently.
+  if (seekInFlight && performance.now() - seekStartedAt > 500) {
+    seekInFlight = false;
+  }
+  if (seekInFlight || pendingSeekTime === null) return;
+  if (Math.abs(video.currentTime - pendingSeekTime) < FRAME_DURATION / 2) {
+    pendingSeekTime = null;
+    return;
+  }
+  seekInFlight = true;
+  seekStartedAt = performance.now();
+  video.currentTime = pendingSeekTime;
+  pendingSeekTime = null;
+}
+
+function requestSeek(t) {
+  pendingSeekTime = Math.round(t / FRAME_DURATION) * FRAME_DURATION;
+  pumpSeek();
+}
+
+video.addEventListener('seeked', () => {
+  seekInFlight = false;
+  pumpSeek();
+});
+video.addEventListener('error', () => { seekInFlight = false; });
 
 /* ─── 3. SCENE SCROLLTRIGGERS ──────────────────────── */
 function computeAlpha(p, at, out, delay = 0) {
@@ -256,10 +312,13 @@ function buildScenes() {
       trigger: scene,
       start:   'top top',
       end:     'bottom bottom',
-      scrub:   reducedMotion ? 0 : 0.8,
+      // scrub: true = no added easing here. Lenis is the single
+      // smoothing layer; stacking a second one made the video trail
+      // the input with a rubber-band lag.
+      scrub:   true,
       onUpdate(self) {
         const t = segStart + self.progress * segLen;
-        video.currentTime = Math.max(0, Math.min(dur, t));
+        requestSeek(Math.max(0, Math.min(dur, t)));
       },
     });
 
